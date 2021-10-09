@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
             NavHost(
                 navController = navHostController,
                 startDestination = "Home",
-                modifier = Modifier.background(Color(0xff0a0959))
+                modifier = Modifier.background(Color(0xfff9f2ec))
             ) {
                 composable("Home") {
                     Home(navHostController)

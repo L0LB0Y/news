@@ -50,7 +50,9 @@ fun Home(
     list?.let { DrawUI(it, navHostController) } ?: Text(
         text = "Wait",
         fontWeight = FontWeight.Bold,
-        color = Color.Black
+        color = Color.White,
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center
     )
 }
 
@@ -70,7 +72,7 @@ fun DrawUI(list: List<Articles>, navHostController: NavHostController) {
                 .fillMaxSize(), text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = Color(0xfff9f2ec),
+                        color = Color.Black,
                         fontWeight = FontWeight.Bold,
                         fontSize = 25.sp, fontFamily = FontFamily.Serif
                     )

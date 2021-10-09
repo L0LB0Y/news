@@ -2,11 +2,11 @@ package com.example.newsapp.view_model
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.newsapp.model.local.ArticlesEntity
 import com.example.newsapp.model.remote.Articles
 import com.example.newsapp.other.Constants
 import com.example.newsapp.repository.Repository
@@ -27,6 +27,7 @@ class HomeViewModel
     private var _allNews = MutableLiveData<List<Articles>>(null)
     val allNews: LiveData<List<Articles>> = _allNews
 
+
     init {
         getAllNew()
     }
@@ -37,7 +38,7 @@ class HomeViewModel
             getRemoteNews()
         } else {
             Constants.createToast("Offline Mode !!", context)
-//            getLocalNews()
+            getLocalNews()
         }
     }
 
@@ -48,46 +49,61 @@ class HomeViewModel
             }.onSuccess {
                 val data = it.articles
                 _allNews.value = data
-                Log.d("lol", "list size = :${data?.size} ")
-//                insertNewsToDB()
+                insertNewsToDB()
             }.onFailure {
                 _allNews.value = null
-                Log.d("lol", "getRemoteNews:${it.message} ")
             }
         }
     }
-//
-//    private fun insertNewsToDB() {
-//        viewModelScope.launch {
-//            if (repository.getAllLocalNews().isNotEmpty()) {
-//                var id = 1
-//                _allNews.value?.forEach {
-//                    it.id = id
-//                    repository.updateNewsIntoDB(it)
-//                    ++id
-//                }
-//            } else {
-//                var id = 1
-//                _allNews.value?.forEach {
-//                    it.id = id
-//                    repository.insertNewsIntoDB(it)
-//                    ++id
-//                }
-//            }
-//        }
-//    }
-//
-//    private fun getLocalNews() {
-//        viewModelScope.launch {
-//            kotlin.runCatching {
-//                repository.getAllLocalNews()
-//            }.onSuccess {
-//                _allNews.value = it
-//            }.onFailure {
-//                _allNews.value = null
-//                Log.d("lol", "getRemoteNews:${it.message} ")
-//            }
-//        }
-//    }
+
+    private fun insertNewsToDB() {
+        viewModelScope.launch {
+            var id = 1
+            allNews.value?.forEach {
+                repository.insertNewsIntoDB(
+                    ArticlesEntity(
+                        id,
+                        it.source,
+                        it.author,
+                        it.title,
+                        it.description,
+                        it.url,
+                        it.urlToImage,
+                        it.publishedAt,
+                        it.content
+                    )
+                )
+                ++id
+            }
+        }
+    }
+
+    private fun getLocalNews() {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                repository.getAllLocalNews()
+            }.onSuccess {
+                _allNews.value = null
+                val list = mutableListOf<Articles>()
+                it.forEach { item ->
+                    list.add(
+                        Articles(
+                            item.source,
+                            item.author,
+                            item.title,
+                            item.description,
+                            item.url,
+                            item.urlToImage,
+                            item.publishedAt,
+                            item.content
+                        )
+                    )
+                }
+                _allNews.value = list.toList()
+            }.onFailure {
+                _allNews.value = null
+            }
+        }
+    }
 
 }

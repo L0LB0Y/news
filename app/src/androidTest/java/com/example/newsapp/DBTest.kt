@@ -81,9 +81,9 @@ class DBTest {
                 description = "",
                 url = ""
             )
-        dao.update(news)
+        dao.insert(news)
         val list = dao.getAllLocalNews()
-        assertThat(list).contains(news)
+        assertThat(list.size).isEqualTo(1)
 
     }
 
@@ -139,7 +139,7 @@ class DBTest {
         dao.insert(news1)
         dao.insert(news2)
         dao.insert(news3)
-        dao.update(news4)
+        dao.insert(news4)
         val list = dao.getAllLocalNews()
         assertThat(list.size).isEqualTo(3)
     }
@@ -183,7 +183,7 @@ class DBTest {
         )
         dao.insert(news1)
         dao.insert(news2)
-        dao.update(news2)
+        dao.insert(news3)
         val list = dao.getAllLocalNews()
         assertThat(list.size).isEqualTo(2)
     }
