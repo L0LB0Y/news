@@ -1,27 +1,25 @@
 package com.example.newsapp.repository
 
-import com.example.newsapp.model.remote.APIData
-import com.example.newsapp.model.remote.Articles
-import com.example.newsapp.model.local.ArticlesDAO
-import com.example.newsapp.model.local.ArticlesEntity
-import com.example.newsapp.other.Constants
+import com.example.newsapp.model.Response
+import com.example.newsapp.database.DataAccessObject
+import com.example.newsapp.model.Articles
 import com.example.newsapp.other.Constants.URL
 import io.ktor.client.*
 import io.ktor.client.request.*
 import javax.inject.Inject
 
-class Repository @Inject constructor(private val client: HttpClient, private val dao: ArticlesDAO) {
+class Repository @Inject constructor(private val client: HttpClient, private val dao: DataAccessObject) {
 
 
-    suspend fun insertNewsIntoDB(articles: ArticlesEntity) {
-        dao.insert(articles)
+    suspend fun insertArticleIntoDB(articles: Articles) {
+        dao.insertArticles(articles)
     }
 
-    suspend fun getAllLocalNews(): List<ArticlesEntity> {
-        return dao.getAllLocalNews()
+    suspend fun getAllLocalArticles(): List<Articles> {
+        return dao.getAllLocalArticles()
     }
 
-    suspend fun getAllRemoteNews(): APIData {
-        return client.get(urlString = URL) as APIData
+    suspend fun getAllRemoteNews(): Response {
+        return client.get(urlString = URL) as Response
     }
 }

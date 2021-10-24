@@ -6,8 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.newsapp.model.local.ArticlesEntity
-import com.example.newsapp.model.remote.Articles
+import com.example.newsapp.model.Articles
 import com.example.newsapp.other.Constants
 import com.example.newsapp.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +23,7 @@ class HomeViewModel
 ) :
     ViewModel() {
 
-    private var _allNews = MutableLiveData<List<Articles>>(null)
+    private var _allNews = MutableLiveData<List<Articles>>(listOf())
     val allNews: LiveData<List<Articles>> = _allNews
 
 
@@ -35,71 +34,45 @@ class HomeViewModel
     private fun getAllNew() {
         if (Constants.isOnline(context)) {
             Constants.createToast("Online Mode !!", context)
-            getRemoteNews()
+            getRemoteArticles()
         } else {
             Constants.createToast("Offline Mode !!", context)
-            getLocalNews()
+            getLocalArticles()
         }
     }
 
-    private fun getRemoteNews() {
+    private fun getRemoteArticles() {
         viewModelScope.launch {
             kotlin.runCatching {
                 repository.getAllRemoteNews()
             }.onSuccess {
                 val data = it.articles
                 _allNews.value = data
-                insertNewsToDB()
+                insertArticlesIntoDB(it.articles)
             }.onFailure {
                 _allNews.value = null
             }
         }
     }
 
-    private fun insertNewsToDB() {
+    private fun insertArticlesIntoDB(articles: List<Articles>) {
         viewModelScope.launch {
             var id = 1
-            allNews.value?.forEach {
-                repository.insertNewsIntoDB(
-                    ArticlesEntity(
-                        id,
-                        it.source,
-                        it.author,
-                        it.title,
-                        it.description,
-                        it.url,
-                        it.urlToImage,
-                        it.publishedAt,
-                        it.content
-                    )
-                )
+            articles.forEach {
+                it.id = id
+                repository.insertArticleIntoDB(it)
                 ++id
             }
         }
     }
 
-    private fun getLocalNews() {
+    private fun getLocalArticles() {
         viewModelScope.launch {
             kotlin.runCatching {
-                repository.getAllLocalNews()
+                repository.getAllLocalArticles()
             }.onSuccess {
-                _allNews.value = null
-                val list = mutableListOf<Articles>()
-                it.forEach { item ->
-                    list.add(
-                        Articles(
-                            item.source,
-                            item.author,
-                            item.title,
-                            item.description,
-                            item.url,
-                            item.urlToImage,
-                            item.publishedAt,
-                            item.content
-                        )
-                    )
-                }
-                _allNews.value = list.toList()
+                val data = it
+                _allNews.value = data
             }.onFailure {
                 _allNews.value = null
             }

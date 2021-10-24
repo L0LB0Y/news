@@ -11,10 +11,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -27,26 +28,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import coil.transform.RoundedCornersTransformation
 import com.example.newsapp.R
-import com.example.newsapp.model.remote.Articles
+import com.example.newsapp.model.Articles
 import com.example.newsapp.other.Constants
-import com.example.newsapp.view_model.ParentViewModel
 import kotlin.random.Random
 
 @SuppressLint("UnrememberedGetBackStackEntry")
 @ExperimentalCoilApi
 @Composable
 fun Details(
-    navHostController: NavHostController,
-    viewModel: ParentViewModel = hiltViewModel(LocalContext.current as ViewModelStoreOwner)
-) {
-    val articles by viewModel.articles.observeAsState()
+    navHostController: NavHostController, articles: Articles) {
     Surface(
         modifier = Modifier
             .padding(15.dp)
@@ -60,13 +55,8 @@ fun Details(
                     .fillMaxWidth()
             ) {
 
-                articles?.urlToImage?.let {
-                    articles?.let { it1 ->
-                        SectionOne(
-                            it, navHostController,
-                            it1
-                        )
-                    }
+                articles.urlToImage?.let {urlToImage ->
+                    SectionOne(urlToImage, navHostController, articles)
                 }
             }
             Box(
@@ -74,19 +64,16 @@ fun Details(
                     .weight(0.7f)
                     .fillMaxWidth()
             ) {
-                articles?.author?.let { SectionTow(it) }
+                articles.author?.let {author -> SectionTow(author) }
             }
             Box(
                 modifier = Modifier
                     .weight(3f)
                     .fillMaxWidth()
             ) {
-                articles?.title?.let {
-                    articles!!.description?.let { it1 ->
-                        SectionThree(
-                            it,
-                            it1
-                        )
+                articles.title?.let {title ->
+                    articles.description?.let { description ->
+                        SectionThree(title,description)
                     }
                 }
             }

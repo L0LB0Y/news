@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -103,10 +104,10 @@ dependencies {
 
 
     // Coil
-    implementation "io.coil-kt:coil-compose:1.3.1"
+    implementation "io.coil-kt:coil-compose:1.4.0"
 
     // live data with compose
-    implementation 'androidx.compose.runtime:runtime-livedata:1.1.0-alpha04'
+    implementation 'androidx.compose.runtime:runtime-livedata:1.1.0-alpha06'
 
     // Ktor
     def ktor_version = "1.6.3"

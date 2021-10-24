@@ -17,7 +17,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -28,16 +27,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavHostController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import coil.transform.RoundedCornersTransformation
 import com.example.newsapp.R
-import com.example.newsapp.model.remote.Articles
+import com.example.newsapp.model.Articles
 import com.example.newsapp.view_model.HomeViewModel
-import com.example.newsapp.view_model.ParentViewModel
 import kotlin.random.Random
 
 @ExperimentalCoilApi
@@ -93,8 +90,7 @@ fun DrawUI(list: List<Articles>, navHostController: NavHostController) {
 @Composable
 fun DrawCard(
     item: Articles,
-    navHostController: NavHostController,
-    parentViewModel: ParentViewModel = hiltViewModel(LocalContext.current as ViewModelStoreOwner)
+    navHostController: NavHostController
 ) {
     Card(
         modifier = Modifier
@@ -102,7 +98,7 @@ fun DrawCard(
             .height(150.dp)
             .padding(15.dp)
             .clickable {
-                parentViewModel.getArticlesObject(item = item) // Sending Data
+                navHostController.currentBackStackEntry?.savedStateHandle?.set("Articles", item)
                 navHostController.navigate("Details")
             }, elevation = 40.dp, backgroundColor = Color(0xff0a0959)
     ) {

@@ -10,11 +10,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
+import com.example.newsapp.model.Articles
 import com.example.newsapp.view.Details
 import com.example.newsapp.view.Home
-import com.example.newsapp.view_model.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -35,7 +34,11 @@ class MainActivity : ComponentActivity() {
                     Home(navHostController)
                 }
                 composable("Details") {
-                    Details(navHostController)
+                    val articles =
+                        navHostController.previousBackStackEntry?.savedStateHandle?.get<Articles>("Articles")
+                    articles?.let {
+                        Details(navHostController, it)
+                    }
                 }
 
             }
